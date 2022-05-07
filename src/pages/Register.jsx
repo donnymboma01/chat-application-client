@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import styled from 'styled-components';
 import { ToastContainer, toast } from 'react-toastify';
 import Logo from '../assets/logo.svg';
+import "react-toastify/dist/ReactToastify.css";
 
 const Register = () =>{
 
@@ -14,6 +15,14 @@ const Register = () =>{
         confirmPassword:''
     });
 
+    const toastOptions = {
+        position:"bottom-right",
+        autoClose:3000,
+        pauseOnHover:true,
+        draggable:true,
+        theme:"dark"
+    };
+
     const handleChange = event =>{
         setValues({...values,[event.target.name]:event.target.value});
     };
@@ -22,18 +31,14 @@ const Register = () =>{
         const{username,email,password,confirmPassword} = values;
 
         if(password !== confirmPassword){
-            toast.error("Password and confirm password should be the same...",{
-                position:"bottom-right",
-                autoClose:8000,
-                pauseOnHover:true,
-                draggable:true,
-                theme:"dark"
-            });
+            console.log("the two passwords don't match");
+            toast.error("Password and confirm password should have same values...",toastOptions);
         }
     };
 
     const handleSubmit = (event) =>{
         event.preventDefault();
+        handleValidation();
     }
 
     return(
