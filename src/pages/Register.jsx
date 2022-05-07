@@ -1,18 +1,45 @@
-import React from "react";
+import React,{ useState,useEffect } from "react";
 import { Link } from "react-router-dom";
 import styled from 'styled-components';
+import { ToastContainer, toast } from 'react-toastify';
 import Logo from '../assets/logo.svg';
 
 const Register = () =>{
 
 
-    const handleChange = event =>{
+    const[values,setValues] = useState({
+        username:'',
+        email:'',
+        password:'',
+        confirmPassword:''
+    });
 
+    const handleChange = event =>{
+        setValues({...values,[event.target.name]:event.target.value});
+    };
+
+    const handleValidation = () =>{
+        const{username,email,password,confirmPassword} = values;
+
+        if(password !== confirmPassword){
+            toast.error("Password and confirm password should be the same...",{
+                position:"bottom-right",
+                autoClose:8000,
+                pauseOnHover:true,
+                draggable:true,
+                theme:"dark"
+            });
+        }
+    };
+
+    const handleSubmit = (event) =>{
+        event.preventDefault();
     }
+
     return(
         <>
             <FormContainer>
-                <form>
+                <form onSubmit={handleSubmit}>
                     <div className="brand">
                         <img src={Logo} alt="logo" />
                         <h1>Snappy</h1>
@@ -21,26 +48,31 @@ const Register = () =>{
                         type='text' 
                         placeholder="Username" 
                         name="username" 
+                        onChange={(event) => handleChange(event)}
                     />
                     <input 
                         type='email' 
                         placeholder="Email" 
                         name="email" 
+                        onChange={(event) => handleChange(event)}
                     />
                     <input 
                         type='password' 
                         placeholder="Password" 
                         name="password" 
+                        onChange={(event) => handleChange(event)}
                     />
                     <input 
                         type="password" 
                         placeholder="Confirm Password" 
                         name="confirmPassword" 
+                        onChange={(event) => handleChange(event)}
                     />
                     <button type="submit">Create User</button>
                     <span>Already have an account ? <Link to='/login'> Go to login page </Link></span>
                 </form>
             </FormContainer>
+            <ToastContainer />
         </>
     );
 };
