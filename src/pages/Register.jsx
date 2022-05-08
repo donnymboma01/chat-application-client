@@ -4,6 +4,8 @@ import styled from 'styled-components';
 import { ToastContainer, toast } from 'react-toastify';
 import Logo from '../assets/logo.svg';
 import "react-toastify/dist/ReactToastify.css";
+import axios from 'axios';
+import { registration } from '../utils/APIRoutes'
 
 const Register = () =>{
 
@@ -33,12 +35,28 @@ const Register = () =>{
         if(password !== confirmPassword){
             console.log("the two passwords don't match");
             toast.error("Password and confirm password should have same values...",toastOptions);
+            return false;
+        }else if(username.length < 3){
+            toast.error("Username should be greater than 3 letters ", toastOptions);
+            return false;
+        }else if(password.length < 5){
+            toast.error("Password should be equal or greater than 5 caracters", toastOptions);
+            return false;
+        }else if(email === ''){
+            toast.error("Email is required !",toastOptions);
+            return false;
         }
+        return true; 
     };
 
-    const handleSubmit = (event) =>{
+    const handleSubmit = async (event) =>{
         event.preventDefault();
-        handleValidation();
+        if(handleValidation()){
+            const{username,email,password,confirmPassword} = values;
+            const { data } = await axios.post(registration,{ username,email,password});
+        }else{
+
+        }
     }
 
     return(
