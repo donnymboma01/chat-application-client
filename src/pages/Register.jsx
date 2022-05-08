@@ -1,10 +1,11 @@
 import React,{ useState,useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link,useNavigate } from "react-router-dom";
 import styled from 'styled-components';
 import { ToastContainer, toast } from 'react-toastify';
 import Logo from '../assets/logo.svg';
 import "react-toastify/dist/ReactToastify.css";
 import axios from 'axios';
+
 import { registration } from '../utils/APIRoutes'
 
 const Register = () =>{
@@ -24,6 +25,7 @@ const Register = () =>{
         draggable:true,
         theme:"dark"
     };
+    const navigate = useNavigate();
 
     const handleChange = event =>{
         setValues({...values,[event.target.name]:event.target.value});
@@ -52,20 +54,33 @@ const Register = () =>{
     const handleSubmit = async (event) =>{
         event.preventDefault();
         if(handleValidation()){
-            const{username,email,password,confirmPassword} = values;
-            const { data } = await axios.post(registration,{ username,email,password});
-        }else{
+            const{username,email,password,confirmPassword } = values;
+            const { data } = await axios.post(registration,{ username,email,password });
+
+            if(data.status === false){
+                toast.error(data.message, toastOptions);
+            }
+            if(data.status === true){
+                localStorage.setItem('user-datas',JSON.stringify(data.user));
+                navigate('/');
+            }
 
         }
     }
 
+    useEffect(() =>{
+        if(localStorage.getItem('jwt-token')){
+            navigate('/chat');
+        }
+    },[])
+
     return(
         <>
             <FormContainer>
-                <form onSubmit={handleSubmit}>
+                <form onSubmit={(event)=>handleSubmit(event)}>
                     <div className="brand">
                         <img src={Logo} alt="logo" />
-                        <h1>Snappy</h1>
+                        <h1>PLANEV</h1>
                     </div>
                     <input 
                         type='text' 
@@ -92,7 +107,7 @@ const Register = () =>{
                         onChange={(event) => handleChange(event)}
                     />
                     <button type="submit">Create User</button>
-                    <span>Already have an account ? <Link to='/login'> Go to login page </Link></span>
+                    <span>Already have an account ? <Link to='/'> Go to login page </Link></span>
                 </form>
             </FormContainer>
             <ToastContainer />

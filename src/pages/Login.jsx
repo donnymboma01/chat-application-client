@@ -1,10 +1,11 @@
 import React,{ useState,useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link,useNavigate } from "react-router-dom";
 import styled from 'styled-components';
 import { ToastContainer, toast } from 'react-toastify';
 import Logo from '../assets/logo.svg';
 import "react-toastify/dist/ReactToastify.css";
 import axios from 'axios';
+import { login } from '../utils/APIRoutes'
 
 const Login = () =>{
 
@@ -22,23 +23,65 @@ const Login = () =>{
         theme:"dark"
     };
 
+    const navigate = useNavigate();
+
+
     const handleChange = event =>{
         setValues({...values,[event.target.name]:event.target.value});
     };
 
+    const handleValidation = () =>{
+        const{username,password} = values;
+
+        if(username.length === ""){
+            toast.error("Username or password is required !", toastOptions);
+            return false;
+        }else if(password === ""){
+            toast.error("Username or password is required !", toastOptions);
+            return false;
+        }
+        return true; 
+    };
+
+    const handleSubmit = async(event) =>{
+        event.preventDefault();
+
+        if(handleValidation()){
+            const {username,password} = values;
+
+            const { data } = await axios.post(login,{ username,password });
+
+            if(data.status === false){
+                toast.error(data.message,toastOptions);
+            }
+            if(data.status === true){
+                localStorage.setItem('jwt-token',JSON.stringify(data.token));
+                navigate('/chat');
+            }
+        }
+    };
+
+    useEffect(() =>{
+        if(localStorage.getItem('jwt-token')){
+            navigate('/chat');
+        }
+    },[])
+
+
     return(
         <>
              <FormContainer>
-                <form >
+                <form onSubmit={(event)=>handleSubmit(event)} >
                     <div className="brand">
                         <img src={Logo} alt="logo" />
-                        <h1>Snappy</h1>
+                        <h1>PLANEV</h1>
                     </div>
                     <input 
                         type='text' 
                         placeholder="Username" 
                         name="username" 
                         onChange={(event) => handleChange(event)}
+                        min="3"
                     />
             
                     <input 
@@ -46,6 +89,7 @@ const Login = () =>{
                         placeholder="Password" 
                         name="password" 
                         onChange={(event) => handleChange(event)}
+                        min="5"
                     />
                  
                     <button type="submit">Connexion</button>
@@ -53,6 +97,7 @@ const Login = () =>{
                 </form>
             </FormContainer>
             <ToastContainer />
+            
         </>
     )
 };
