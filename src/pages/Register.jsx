@@ -25,6 +25,7 @@ const Register = () =>{
         draggable:true,
         theme:"dark"
     };
+    
     const navigate = useNavigate();
 
     const handleChange = event =>{
